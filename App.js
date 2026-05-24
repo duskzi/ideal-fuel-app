@@ -22,17 +22,19 @@ from 'react-native';
   | All rights reserved
 */
 
-
+/* Importes dos meus componentes */
 import ResultCard from './components/ResultCard';
 import AppButton from './components/AppButton';
 
+/* Função principal */
 export default function App() {
 
-  const [price1, setPrice1] = useState(null);
-  const [price2, setPrice2] = useState(null);
-  const [resultado, setResultado] = useState(null);
+  const [price1, setPrice1] = useState(null); // Preço do primeiro input
+  const [price2, setPrice2] = useState(null); // Preço do segundo input
+  const [resultado, setResultado] = useState(null); // Resultado
 
-  const verify = () => {
+  /* Verificar o preço e setar os valores do card */
+  function verify() {
 
     if (!price1 || !price2) return;
     const recomendacao = price1 / price2 < 0.7 ? 'Etanol' : 'Gasolina';
@@ -40,15 +42,28 @@ export default function App() {
     setResultado({ recomendacao, percentual });
   }
 
-  const priceText = (price) => {
+  /* Retorna o preço caso os valores estejam corretos */
+  function priceText(price) {
 
     return price === null || isNaN(price) ? '' : 'R$'+price;
   }
 
+  /*
+      Header: 
+        SafeAreaView para a barra de status do celular
+        não cobrir o ícone e o título
+      
+      Input: 
+        Renderiza as bordas em vermelho caso o texto
+        digitado não for um número
+      
+      Card:
+        Só aparece depois de clicar no botão verde após
+        digitar os preços
+  */
   return (
 
     <View style={{ flex: 1 }}>
-    
       <SafeAreaView style={styles.header}>
         <Image 
           source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpXtOOhMFHRVBhLgUi5nliSWrD-CNrOcmtTA&s' }} 
@@ -83,18 +98,22 @@ export default function App() {
           onChangeText={(text) => setPrice2(parseFloat(text))}
         />
 
-        {resultado && (
-        <ResultCard recomendation={resultado.recomendacao} percentual={resultado.percentual} />
-        )}
-
+        {/* Se o resultado não for NULL, rederiza o elemento */}
+        {resultado ? (
+          <ResultCard recomendation={resultado.recomendacao} percentual={resultado.percentual} />
+        ) : null}
       </View>
 
-        <AppButton title='Verificar vantagem' onPress={verify} />
+      {/* Botão */}
+      <AppButton title='Verificar vantagem' onPress={verify} />
+
+      {/* Barra de status com altura automática */}  
       <StatusBar height='auto' />
     </ View>
   );
 }
 
+/* Stylesheet */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
