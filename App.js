@@ -1,24 +1,97 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
+import { useState } from 'react';
+import { 
+  StyleSheet, 
+  Text, View, 
+  Image, 
+  TextInput, 
+  Dimensions,
+  ScrollView,
+  SafeAreaView,
+}
+from 'react-native';
 
-// 
+/*
+  Para manter boas práticas estou nomeando 
+  todas as variáveis em inglês.
+
+  | Qualquer dúvida enviar email para:
+    felipekuhl321@gmail.com
+
+  | Copyright © 2026 Felipe Kühl Pereira
+  | All rights reserved
+*/
+
+
+import ResultCard from './components/ResultCard';
+import AppButton from './components/AppButton';
 
 export default function App() {
+
+  const [price1, setPrice1] = useState(null);
+  const [price2, setPrice2] = useState(null);
+  const [resultado, setResultado] = useState(null);
+
+  const verify = () => {
+
+    if (!price1 || !price2) return;
+    const recomendacao = price1 / price2 < 0.7 ? 'Etanol' : 'Gasolina';
+    const percentual = ((price1 / price2) * 100).toFixed(1);
+    setResultado({ recomendacao, percentual });
+  }
+
+  const priceText = (price) => {
+
+    return price === null || isNaN(price) ? '' : 'R$'+price;
+  }
+
   return (
+
+    <View style={{ flex: 1 }}>
     
-    <View style={styles.container}>
-   
-      <Text style={styles.title}>Álcool ou Gasolina?</Text>
+      <SafeAreaView style={styles.header}>
+        <Image 
+          source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpXtOOhMFHRVBhLgUi5nliSWrD-CNrOcmtTA&s' }} 
+          style={{width: 32, height: 32}} 
+        />
+        <Text style={styles.title}>Etanol ou Gasolina?</Text>
+      </SafeAreaView>
 
-      <Text>Preço do Etanol:</Text>
-      <TextInput style={styles.input} placeholder='Digite o preço do etanol...' />
+      <View style={styles.container}>
+        <Image 
+          source={{ uri: 'https://uxwing.com/wp-content/themes/uxwing/download/location-travel-map/gas-station-map-location-black-icon.png' }} 
+          style={styles.image} 
+        />
 
-      <Text>Preço da Gasolina:</Text>
-      <TextInput style={styles.input} placeholder='Digite o preço da gasolina...' />
+        <Text>Preço do Etanol: {priceText(price1)}</Text>
+        <TextInput 
+          style={[
+            styles.input,
+            price1 !== null && isNaN(price1) && { borderColor: 'red' }
+          ]} 
+          placeholder='Digite o preço do etanol...'  
+          onChangeText={(text) => setPrice1(parseFloat(text))}
+        />
 
-      <StatusBar style="auto" />
+        <Text>Preço da Gasolina: {priceText(price2)}</Text>
+        <TextInput 
+          style={[
+            styles.input,
+            price2 !== null && isNaN(price2) && { borderColor: 'red' }
+          ]} 
+          placeholder='Digite o preço da gasolina... '
+          onChangeText={(text) => setPrice2(parseFloat(text))}
+        />
 
-    </View>
+        {resultado && (
+        <ResultCard recomendation={resultado.recomendacao} percentual={resultado.percentual} />
+        )}
+
+      </View>
+
+        <AppButton title='Verificar vantagem' onPress={verify} />
+      <StatusBar height='auto' />
+    </ View>
   );
 }
 
@@ -29,17 +102,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  header: {
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    padding: 16,
+  }, 
   title: {
-    fontWeight: 'bold',
-    fontSize: 32,
-    marginTop: 16,
-    marginBottom: 24,
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 30,
+    textAlign: 'center',
   },
   input: {
-    padding: 8,
-    margin: 6,
+    width: Dimensions.get('window').width - 64,
+    padding: 12,
+    marginBottom: 12,
+    marginTop: 8,
     color: 'grey',
     backgroundColor: '#F2F2F2',
     borderRadius: 16,
+    borderColor: 'grey',
+    borderWidth: 1,
+  },
+  image: {
+    width: 180,
+    height: 180,
+    margin: 32,
   }
 });
